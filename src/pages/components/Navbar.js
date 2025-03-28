@@ -6,16 +6,27 @@ import { signOut } from "firebase/auth";
 import { FaUserCircle } from "react-icons/fa";
 
 export default function Navbar() {
-  const [user] = useAuthState(auth);
+  const [user,loading] = useAuthState(auth);
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      // Check if the logged-in user is an admin
+      const adminEmails = ["ms5505535@gmail.com"]; // Add actual admin emails here
+      setIsAdmin(adminEmails.includes(user.email));
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user]);
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      console.log("User logged out successfully");
+      alert("User logged out successfully");
     } catch (error) {
-      console.error("Logout Error:", error.message);
+      alert("Logout Error:", error.message);
     }
   };
 
@@ -36,7 +47,7 @@ export default function Navbar() {
         Laer Health
       </Link>
 
-      {user ? (
+      {loading ? null :user ? (
         <div className="relative" ref={dropdownRef}>
           <div
             className="flex items-center space-x-2 cursor-pointer"
@@ -48,6 +59,14 @@ export default function Navbar() {
 
           {menuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md p-2">
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="block px-4 py-2 text-blue-600 hover:bg-gray-100 rounded"
+                >
+                  Admin Panel
+                </Link>
+              )}
               <Link
                 href="/profile"
                 className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
