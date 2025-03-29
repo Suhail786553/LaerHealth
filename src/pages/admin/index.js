@@ -4,23 +4,16 @@ import InviteUserForm from "../components/admin/InviteUserForm";
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
-
-  // useEffect(() => {
-  //   fetch("/api/admin/User") // Correct API path
-  //     .then((res) => res.json())
-  //     .then((data) => setUsers(data))
-  //     .catch((err) => console.error("Error fetching users:", err));
-  // }, []);
   useEffect(() => {
     fetch("/api/admin/user")
-      .then((res) => res.json()) // Ensure response is JSON
+      .then((res) => res.json())
       .then((data) => {
         console.log("Fetched Users:", data);
         setUsers(data);
       })
       .catch((err) => console.error("Error fetching users:", err));
   }, []);
-  
+
   const handleUserRemove = (userId) => {
     fetch(`/api/admin/removeuser?id=${userId}`, {
       method: "DELETE",

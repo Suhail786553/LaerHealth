@@ -37,7 +37,7 @@ export default function Join() {
           </button>
         </>
       ) : (
-        <p>Loading or invalid invitation link...</p> // Added loading state
+        <p>Loading or invalid invitation link...</p> 
       )}
     </div>
   );

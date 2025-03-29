@@ -11,13 +11,14 @@ export default function Signup() {
     const [generatedOtp, setGeneratedOtp] = useState(null);
     const [step, setStep] = useState(1);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const sendOtp = async () => {
         if (!validateEmail(email)) {
             setError("Please enter a valid email address");
             return;
         }
-
+        setLoading(true);
         try {
             const response = await fetch("/api/sendOtp", {
                 method: "POST",
@@ -36,15 +37,18 @@ export default function Signup() {
         } catch (err) {
             setError("Failed to connect to server");
         }
+        setLoading(false);
     };
 
     const verifyOtp = () => {
+        setLoading(true);
         if (otp === generatedOtp?.toString()) {
             setStep(3);
             setError("");
         } else {
             setError("Invalid OTP");
         }
+        setLoading(false);
     };
 
     const handleSignup = async () => {
@@ -52,15 +56,15 @@ export default function Signup() {
             setError("Password must be at least 6 characters");
             return;
         }
-
+        setLoading(true);
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             await updateProfile(userCredential.user, { displayName: name });
-
             window.location.href = "/";
         } catch (error) {
             handleFirebaseError(error);
         }
+        setLoading(false);
     };
 
     const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -100,9 +104,10 @@ export default function Signup() {
                         />
                         <button 
                             onClick={sendOtp} 
-                            className="w-full bg-blue-600 text-white p-2 rounded mt-4 cursor-pointer"
+                            className={`w-full bg-blue-600 text-white p-2 rounded mt-4 cursor-pointer ${loading ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                            disabled={loading}
                         >
-                            Send OTP
+                            {loading ? "Sending..." : "Send OTP"}
                         </button>
                     </>
                 )}
@@ -118,9 +123,10 @@ export default function Signup() {
                         />
                         <button 
                             onClick={verifyOtp} 
-                            className="w-full bg-green-600 text-white p-2 rounded mt-4 cursor-pointer"
+                            className={`w-full bg-green-600 text-white p-2 rounded mt-4 cursor-pointer ${loading ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                            disabled={loading}
                         >
-                            Verify OTP
+                            {loading ? "Verifying..." : "Verify OTP"}
                         </button>
                     </>
                 )}
@@ -143,9 +149,10 @@ export default function Signup() {
                         />
                         <button 
                             onClick={handleSignup} 
-                            className="w-full bg-blue-600 text-white p-2 rounded mt-4 cursor-pointer"
+                            className={`w-full bg-blue-600 text-white p-2 rounded mt-4 cursor-pointer ${loading ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                            disabled={loading}
                         >
-                            Complete Signup
+                            {loading ? "Signing Up..." : "Complete Signup"}
                         </button>
                     </>
                 )}
